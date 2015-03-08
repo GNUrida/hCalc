@@ -83,4 +83,8 @@ test :: String -> Double
 test s = let result = (convert . toList . removeSpaces) s
 		 in case (elem "error" result) of
 		 	True  -> -1
+<<<<<<< HEAD
 		 	False -> read $ calculate result
+=======
+		 	False -> read $ calculate result
+>>>>>>> d1ce117263d57f3646fd9f54822bd3fc3b813b79
