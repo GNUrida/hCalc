@@ -19,7 +19,7 @@ isNumeric :: String -> Bool
 isNumeric "" = True
 isNumeric (x:xs)
 	| (ord x >= 48) && (ord x <= 57) = isNumeric xs
-	| otherwise 					 = False
+	| otherwise 			 = False
 
 isOperator :: String -> Bool
 isOperator [s] = s == '+' || s == '-' || s == '*' || s == '/'
