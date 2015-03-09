@@ -18,8 +18,8 @@ import Data.Maybe
 isNumeric :: String -> Bool
 isNumeric "" = True
 isNumeric (x:xs)
-	| (ord x >= 48) && (ord x <= 57) = isNumeric xs
-	| otherwise 					 = False
+	| isDigit x || x == '.' = isNumeric xs
+	| otherwise 			= False
 
 isOperator :: String -> Bool
 isOperator [s] = s == '+' || s == '-' || s == '*' || s == '/'
@@ -84,17 +84,18 @@ calculate s = calculate' s [] where
 		| isNumeric x = calculate' xs $ x : stack
 		| (isOperator x) && (isNumeric y) && (isNumeric ys) = case x of
 			"+" -> calculate' xs $ (compute y ys (+)) : yss
-			"-" -> calculate' xs $ (compute y ys (-)) : yss
+			"-" -> calculate' xs $ (compute ys y (-)) : yss
 			"*" -> calculate' xs $ (compute y ys (*)) : yss
-			"/" -> calculate' xs $ (compute y ys (/)) : yss
+			"/" -> calculate' xs $ (compute ys y (/)) : yss
+		| otherwise	= "error while calculating"
 	calculate' (x:xs) stack
 		| isNumeric x = calculate' xs $ x : stack 
 
 compute :: String -> String -> (Double -> Double -> Double) -> String
-compute s1 s2 f = show $ f (read s1) (read s2) :: String
+compute s1 s2 f = show $ f (read s1) (read s2)
 
-test :: String -> Double
+test :: String -> String
 test s = let result = (convert . toList . removeSpaces) s
 		 in case (elem "error" result) of
-		 	True  -> -1
-		 	False -> read $ calculate result
+		 	True  -> last result
+		 	False -> calculate result
