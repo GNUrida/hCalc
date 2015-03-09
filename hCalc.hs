@@ -15,19 +15,23 @@ GNU General Public License for more details.
 import Data.Char
 import Data.Maybe
 
+-- checks, whether a string represents a number
 isNumeric :: String -> Bool
 isNumeric "" = True
 isNumeric (x:xs)
 	| isDigit x || x == '.' = isNumeric xs
 	| otherwise 			= False
 
+-- checks, whether a string represents a operator
 isOperator :: String -> Bool
 isOperator [s] = s == '+' || s == '-' || s == '*' || s == '/'
 isOperator _   = False
 
+-- removes all spaces in a string
 removeSpaces :: String -> String
 removeSpaces = filter (/= ' ')
 
+-- converts a string into a list of strings, splitted by numbers and operators
 toList :: String -> [String]
 toList "" = []
 toList (x:xs)
@@ -42,6 +46,7 @@ toList (x:xs)
 						  in (x:a, b)
 			| otherwise = ("", x:xs)
 
+-- transforms a algebraic term from infix to postfix
 convert :: [String] -> [String]
 convert s = convert' s [] where
 
@@ -65,6 +70,7 @@ convert s = convert' s [] where
 			_   -> y : (convert' xs $ x:ys) 
 		where
 
+			-- pops all elements of a stack until a bracket "(" is found
 			getTerm :: [String] -> Maybe ([String], [String])
 			getTerm [] = Nothing -- Fehlerfall
 			getTerm (t:ts)
@@ -73,6 +79,7 @@ convert s = convert' s [] where
 					Just (a, b) -> Just (t:a, b)
 				| t == "("     = Just ([], ts)
 
+-- evaluates a postfix term with help of a stack
 calculate :: [String] -> String
 calculate s = calculate' s [] where
 
@@ -91,9 +98,12 @@ calculate s = calculate' s [] where
 	calculate' (x:xs) stack
 		| isNumeric x = calculate' xs $ x : stack 
 
+-- applies a mathematic function on two strings
 compute :: String -> String -> (Double -> Double -> Double) -> String
 compute s1 s2 f = show $ f (read s1) (read s2)
 
+-- just a test function because IO is not handled yet
+-- e.g.: test "(1+2)*3" ~> "9"
 test :: String -> String
 test s = let result = (convert . toList . removeSpaces) s
 		 in case (elem "error" result) of
