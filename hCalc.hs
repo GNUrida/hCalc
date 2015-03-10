@@ -104,8 +104,11 @@ compute s1 s2 f = show $ f (read s1) (read s2)
 
 -- just a test function because IO is not handled yet
 -- e.g.: test "(1+2)*3" ~> "9"
-test :: String -> String
-test s = let result = (convert . toList . removeSpaces) s
-		 in case (elem "error" result) of
-		 	True  -> last result
-		 	False -> calculate result
+execute :: String -> String
+execute s = let result = (convert . toList . removeSpaces) s
+		 	in case (elem "error" result) of
+		 		True  -> last result
+		 		False -> calculate result
+
+main :: IO ()
+main = putStrLn "Enter a term:" >> getLine >>= \term -> putStrLn $ execute term
