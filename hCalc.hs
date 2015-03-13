@@ -20,7 +20,7 @@ isNumeric :: String -> Bool
 isNumeric "" = True
 isNumeric (x:xs)
 	| isDigit x || x == '.' = isNumeric xs
-	| otherwise 			= False
+	| otherwise 		= False
 
 -- checks, whether a string represents a operator
 isOperator :: String -> Bool
@@ -43,7 +43,7 @@ toList (x:xs)
 		getNumber "" = ("", "")
 		getNumber (x:xs)
 			| isDigit x = let (a, b) = getNumber xs
-						  in (x:a, b)
+				      in (x:a, b)
 			| otherwise = ("", x:xs)
 
 -- transforms a algebraic term from infix to postfix
@@ -53,7 +53,7 @@ convert s = convert' s [] where
 	convert' :: [String] -> [String] -> [String]
 	convert' [] stack
 		| elem "(" stack = "error" : ["closing bracket not found"] -- Fehlerfall
-		| otherwise		 = stack
+		| otherwise      = stack
 	convert' (x:xs) []
 		| isNumeric x  = x : convert' xs []
 		| isOperator x || x == "(" = convert' xs [x]
@@ -75,7 +75,7 @@ convert s = convert' s [] where
 			getTerm [] = Nothing -- Fehlerfall
 			getTerm (t:ts)
 				| isOperator t = case getTerm ts of
-					Nothing 	-> Nothing
+					Nothing     -> Nothing
 					Just (a, b) -> Just (t:a, b)
 				| t == "("     = Just ([], ts)
 
@@ -86,7 +86,7 @@ calculate s = calculate' s [] where
 	calculate' :: [String] -> [String] -> String
 	calculate' [] stack
 		| length stack == 1 = head stack
-		| otherwise			= "error while calculating"
+		| otherwise	    = "error while calculating"
 	calculate' (x:xs) stack@(y:ys:yss)
 		| isNumeric x = calculate' xs $ x : stack
 		| (isOperator x) && (isNumeric y) && (isNumeric ys) = case x of
@@ -102,8 +102,7 @@ calculate s = calculate' s [] where
 compute :: String -> String -> (Double -> Double -> Double) -> String
 compute s1 s2 f = show $ f (read s1) (read s2)
 
--- just a test function because IO is not handled yet
--- e.g.: test "(1+2)*3" ~> "9"
+-- calculates a term and returns the result
 execute :: String -> String
 execute s = let result = (convert . toList . removeSpaces) s
 		 	in case (elem "error" result) of
