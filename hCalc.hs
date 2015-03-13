@@ -110,4 +110,4 @@ execute s = let result = (convert . toList . removeSpaces) s
 		 		False -> calculate result
 
 main :: IO ()
-main = putStrLn "Enter a term:" >> getLine >>= \term -> putStrLn $ execute term
+main = putStrLn "Enter a term:" >> getLine >>= putStrLn . execute
