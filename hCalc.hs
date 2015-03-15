@@ -24,7 +24,7 @@ isNumeric (x:xs)
 
 -- checks, whether a string represents a operator
 isOperator :: String -> Bool
-isOperator [s] = s == '+' || s == '-' || s == '*' || s == '/'
+isOperator [s] = s == '+' || s == '-' || s == '*' || s == '/' || s == '^'
 isOperator _   = False
 
 -- removes all spaces in a string
@@ -64,7 +64,7 @@ convert s = convert' s [] where
 		| x == ")"	  = case getTerm $ y:ys of
 			Nothing 	  -> "error" : ["invalid brackets"] -- Fehlerfall
 			Just (x1, x2) -> x1 ++ convert' xs x2
-		| (isOperator x) && (x == "*" || x == "/") && (y == "+" || y == "-" || y == "(" || y == ")") = convert' xs $ x:y:ys
+		| (isOperator x) && (x == "*" || x == "/" || x == "^") && (y == "+" || y == "-" || y == "(" || y == ")") = convert' xs $ x:y:ys
 		| isOperator x = case y of
 			"(" -> convert' xs $ x:y:ys
 			_   -> y : (convert' xs $ x:ys) 
@@ -94,6 +94,7 @@ calculate s = calculate' s [] where
 			"-" -> calculate' xs $ (compute ys y (-)) : yss
 			"*" -> calculate' xs $ (compute y ys (*)) : yss
 			"/" -> calculate' xs $ (compute ys y (/)) : yss
+			"^" -> calculate' xs $ (compute ys y (**)) : yss
 		| otherwise	= "error while calculating"
 	calculate' (x:xs) stack
 		| isNumeric x = calculate' xs $ x : stack 
