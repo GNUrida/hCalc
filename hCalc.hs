@@ -40,14 +40,14 @@ toList :: String -> [String]
 toList "" = []
 toList (x:xs)
 	| isNumeric [x] = let (a, b) = getNumber $ x:xs
-					  in a : toList b
-	| otherwise 	= [x] : toList xs where -- isOperator [x] || x == '(' || x == ')' = [x] : toList xs
+                      in a : toList b
+	| otherwise 	= [x] : toList xs where
 
 		getNumber :: String -> (String, String)
 		getNumber "" = ("", "")
 		getNumber (x:xs)
 			| isDigit x = let (a, b) = getNumber xs
-				          in (x:a, b)
+                          in (x:a, b)
 			| otherwise = ("", x:xs)
 
 -- transforms a algebraic term from infix to postfix
@@ -62,7 +62,7 @@ convert s = convert' s [] where
 		| isNumeric x  = x : convert' xs []
 		| isOperator x || x == "(" = convert' xs [x]
 		| x == ")" = "error" : ["invalid brackets"] -- Fehlerfall
-		| otherwise = "error" : ["unknown character: "  ++ x]
+		| otherwise = "error" : ["unknown character: " ++ x]
 	convert' (x:xs) (y:ys)
 		| isNumeric x = x : (convert' xs $ y:ys)
 		| x == "(" 	  = convert' xs $ x:y:ys
@@ -73,7 +73,7 @@ convert s = convert' s [] where
 		| isOperator x = case y of
 			"(" -> convert' xs $ x:y:ys
 			_   -> y : (convert' xs $ x:ys)
-		| otherwise = "error" : ["unknown character: "  ++ x] where
+		| otherwise = "error" : ["unknown character: " ++ x] where
 
 			-- pops all elements of a stack until a bracket "(" is found
 			getTerm :: [String] -> Maybe ([String], [String])
