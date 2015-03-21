@@ -10,6 +10,10 @@ This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 -}
 
 import Data.Char
@@ -20,7 +24,7 @@ isNumeric :: String -> Bool
 isNumeric "" = True
 isNumeric (x:xs)
 	| isDigit x || x == '.' = isNumeric xs
-	| otherwise 		= False
+	| otherwise             = False
 
 -- checks, whether a string represents a operator
 isOperator :: String -> Bool
@@ -31,19 +35,19 @@ isOperator _   = False
 removeSpaces :: String -> String
 removeSpaces = filter (/= ' ')
 
--- converts a string into a list of strings, splitted by numbers and operators
+-- converts a string into a list of strings, splitted by numbers or operators
 toList :: String -> [String]
 toList "" = []
 toList (x:xs)
 	| isNumeric [x] = let (a, b) = getNumber $ x:xs
 					  in a : toList b
-	| isOperator [x] || x == '(' || x == ')' = [x] : toList xs where
+	| otherwise 	= [x] : toList xs where -- isOperator [x] || x == '(' || x == ')' = [x] : toList xs
 
 		getNumber :: String -> (String, String)
 		getNumber "" = ("", "")
 		getNumber (x:xs)
 			| isDigit x = let (a, b) = getNumber xs
-				      in (x:a, b)
+				          in (x:a, b)
 			| otherwise = ("", x:xs)
 
 -- transforms a algebraic term from infix to postfix
@@ -58,6 +62,7 @@ convert s = convert' s [] where
 		| isNumeric x  = x : convert' xs []
 		| isOperator x || x == "(" = convert' xs [x]
 		| x == ")" = "error" : ["invalid brackets"] -- Fehlerfall
+		| otherwise = "error" : ["unknown character: "  ++ x]
 	convert' (x:xs) (y:ys)
 		| isNumeric x = x : (convert' xs $ y:ys)
 		| x == "(" 	  = convert' xs $ x:y:ys
@@ -67,8 +72,8 @@ convert s = convert' s [] where
 		| (isOperator x) && (x == "*" || x == "/" || x == "^") && (y == "+" || y == "-" || y == "(" || y == ")") = convert' xs $ x:y:ys
 		| isOperator x = case y of
 			"(" -> convert' xs $ x:y:ys
-			_   -> y : (convert' xs $ x:ys) 
-		where
+			_   -> y : (convert' xs $ x:ys)
+		| otherwise = "error" : ["unknown character: "  ++ x] where
 
 			-- pops all elements of a stack until a bracket "(" is found
 			getTerm :: [String] -> Maybe ([String], [String])
